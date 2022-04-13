@@ -12,46 +12,46 @@ import Foundation
 import SwiftUI
 
 // MARK: - LinkAdapter
-class LinkAdapter: Identifiable, Decodable, ObservableObject, Hashable{
+public class LinkAdapter: Identifiable, Decodable, ObservableObject, Hashable{
   /// some informations about the firmware status if this link adapter
-  enum connectionTypes : String, Decodable{
+  public enum connectionTypes : String, Decodable{
     case none, canbus, wireless
   }
-  let updateAvailable 	: Bool
-  let updateRequired 		: Bool
-  let firmwareCorrupted : Bool?
+  public let updateAvailable 	: Bool
+  public let updateRequired 		: Bool
+  public let firmwareCorrupted : Bool?
   
-  let radioUpdateAvailable: Bool
-  let radioUpdateRequired : Bool
+  public let radioUpdateAvailable: Bool
+  public let radioUpdateRequired : Bool
   
   /// a collection of connection types the linkAdapter uses
-  let connactionType : connectionTypes
+  public let connactionType : connectionTypes
   
   /// the epoc the adapter was found. This String is only set if the adapter is valid ->
-  let foundAt: String
+  public let foundAt: String
   
   /// if this adapter is currently paired
-  @Published var isPaired : Bool
-  @Published var isConnected : Bool = false
-  @Published var isValid : Bool
+  @Published public var isPaired : Bool
+  @Published public var isConnected : Bool = false
+  @Published public var isValid : Bool
   
-  @Published var id: String
-  var linkType : String
-  var portName: String
+  @Published public var id: String
+  public var linkType : String
+  public var portName: String
   
   
   // MARK: Hashable
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(id)
   }
   
   // MARK: Equatable
-  static func == (lhs: LinkAdapter, rhs: LinkAdapter) -> Bool {
+  public static func == (lhs: LinkAdapter, rhs: LinkAdapter) -> Bool {
     return lhs.id == rhs.id
   }
   
   
-  init(){
+  public init(){
     updateAvailable = false
     updateRequired = true
     firmwareCorrupted = false
@@ -67,7 +67,7 @@ class LinkAdapter: Identifiable, Decodable, ObservableObject, Hashable{
     portName = "/dev/cu.usbmodem2043386356311"
   }
   
-  required init(from decoder: Decoder) throws {
+  public required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     updateAvailable = try container.decode(Bool.self, forKey: .updateAvailable)
     updateRequired = try container.decode(Bool.self, forKey: .updateRequired)
@@ -102,7 +102,7 @@ class LinkAdapter: Identifiable, Decodable, ObservableObject, Hashable{
 }
 
 /// Devices of edelkrone
-enum EdelkroneDevice : String, Decodable{
+public enum EdelkroneDevice : String, Decodable{
   case slideModule
   case slideModuleV3
   case sliderOnePro
@@ -135,7 +135,7 @@ enum EdelkroneDevice : String, Decodable{
     }
   }
   
-  func toString() -> String {
+  public func toString() -> String {
     switch self {
     case .slideModule:
       return "Slide Module v2"
@@ -179,54 +179,54 @@ enum EdelkroneDevice : String, Decodable{
 
 // MARK: - MotionControlSystem
 
-class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
+public class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
   /// ID of the associated Group if any. Value contains 65535 if not assigned
-  @Published var groupID: Int
+  @Published public var groupID: Int
   
   /// is true if MCS is paired through a canBus 3.2mm connector
-  @Published var linkPairigingActive: Bool
+  @Published public var linkPairigingActive: Bool
   
   /// is true if a HeadOne axis is tilted
-  @Published var isTilted: Bool
+  @Published public var isTilted: Bool
   /// fix for bug in AIP
   let k:Int
   
   /// the mac-address of the device
-  @Published var macAddress: String
+  @Published public var macAddress: String
   
   /// received signal strength indication
-  @Published var rssi: Int
+  @Published public var rssi: Int
   
   /// is true if a firmeware update is available
-  @Published var isFirmewareAvailabe: Bool
+  @Published public var isFirmewareAvailabe: Bool
   
   /// is true if a radio firmware update is available
-  @Published var isRadioUpdateAvailable: Bool
+  @Published public var isRadioUpdateAvailable: Bool
   
-  @Published var useInPairing: Bool
+  @Published public var useInPairing: Bool
   
-  var id:String{
+  public var id:String{
     get {
       return macAddress
     }
   }
   
   
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(macAddress)
   }
   
-  static func == (lhs: MotionControlSystem, rhs: MotionControlSystem) -> Bool {
+  public static func == (lhs: MotionControlSystem, rhs: MotionControlSystem) -> Bool {
     return lhs.macAddress == rhs.macAddress
   }
   // List of String indication the MCS is a Group Master
-  static let masterIndicator = ["panOnly", "tiltOnly", "panTilt", "slideOnly", "dollyOnly", "panAndSlide", "tiltAndSlide", "panAndDolly",
+  public static let masterIndicator = ["panOnly", "tiltOnly", "panTilt", "slideOnly", "dollyOnly", "panAndSlide", "tiltAndSlide", "panAndDolly",
                                 "tiltAndDolly", "panTiltAndSlide", "panTiltAndDolly", "panAndJib", "tiltAndJib", "panTiltAndJib",
                                 "jibOnly", "panAndJibPlus", "tiltAndJibPlus", "panTiltAndJibPlus", "jibPlusOnly", "followFocusOnly"]
   
-  static let memberIndicatores = ["groupMember"]
+  public static let memberIndicatores = ["groupMember"]
   
-  static let unpaierdIndicators = ["none", "possibleCanbusMaster"]
+  public static let unpaierdIndicators = ["none", "possibleCanbusMaster"]
   /** if the device is a group master this variable contains the capabilities of the group encodeed as a string
    The data combines the possibilites of
    pan, tilt, slide, dolly, jib, jibPlus and followFocus
@@ -269,7 +269,7 @@ class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
    - bootingUp
    - firmwareError
    */
-  @Published var setup: String
+  @Published public var setup: String
   
   /** Contains  the device Type of the MotionControlSystem
    
@@ -293,9 +293,9 @@ class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
    */
   
   
-  @Published var deviceType: EdelkroneDevice
+  @Published public var deviceType: EdelkroneDevice
   
-  init(){
+  public init(){
     groupID = 65535
     linkPairigingActive = false
     isTilted = false
@@ -310,7 +310,7 @@ class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
     useInPairing = false
   }
   
-  required init(from decoder: Decoder) throws {
+  public required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     groupID = try container.decode(Int.self, forKey: .groupID)
     linkPairigingActive = ((try? container.decode(Bool.self, forKey: .linkPairigingActive)) != nil)
@@ -343,19 +343,19 @@ class MotionControlSystem: Decodable, Identifiable, ObservableObject, Hashable{
 
 
 // MARK: - PairingGroup
-class PairingGroup: Identifiable,ObservableObject, Hashable{
+public class PairingGroup: Identifiable,ObservableObject, Hashable{
   
-  @Published var groupedControlSystems:[MotionControlSystem] = []
-  @Published var groupID : Int = .noGroup // the default nogroup marker
+  @Published public var groupedControlSystems:[MotionControlSystem] = []
+  @Published public var groupID : Int = .noGroup // the default nogroup marker
   
-  @Published var groupMaster: MotionControlSystem?
-  @Published var isConnected:Bool = false
+  @Published public var groupMaster: MotionControlSystem?
+  @Published public var isConnected:Bool = false
   
-  init(groupID: Int){
+  public init(groupID: Int){
     self.groupID = groupID
   }
   
-  init(){
+  public init(){
     self.groupID = Int.random(in: 1000...10000)
     var mcs = MotionControlSystem()
     mcs.groupID = self.groupID
@@ -377,22 +377,22 @@ class PairingGroup: Identifiable,ObservableObject, Hashable{
     
   }
   
-  static func == (lhs: PairingGroup, rhs: PairingGroup) -> Bool {
+  public static func == (lhs: PairingGroup, rhs: PairingGroup) -> Bool {
     lhs.groupID == rhs.groupID
   }
   
-  var id:Int {
+  public var id:Int {
     return groupID
   }
   
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(groupID)
     for mcs in groupedControlSystems {
       hasher.combine(mcs)
     }
   }
   
-  func addMotionControlSystem(_ mcs: MotionControlSystem){
+  public func addMotionControlSystem(_ mcs: MotionControlSystem){
     if (mcs.groupID == self.groupID) && ( !groupedControlSystems.contains(mcs))  {
       groupedControlSystems.append(mcs)
       if MotionControlSystem.masterIndicator.contains(mcs.setup)  {
@@ -401,7 +401,7 @@ class PairingGroup: Identifiable,ObservableObject, Hashable{
     }
   }
   
-  func removeMotionControlSystem(_ mcs:MotionControlSystem){
+  public func removeMotionControlSystem(_ mcs:MotionControlSystem){
     if (mcs.groupID == self.groupID) || (mcs.groupID == .noGroup){
       groupedControlSystems.removeAll(where: {$0.macAddress == mcs.macAddress})
       if mcs == groupMaster {
@@ -409,7 +409,7 @@ class PairingGroup: Identifiable,ObservableObject, Hashable{
       }
     }
   }
-  var isEmpty:Bool {
+  public var isEmpty:Bool {
     get{
       return groupedControlSystems.isEmpty
     }
@@ -418,15 +418,15 @@ class PairingGroup: Identifiable,ObservableObject, Hashable{
 
 // MARK: - Paired Motion Control System Descriptions
 
-enum AxelID:String, Decodable, Comparable{
+public enum AxelID:String, Decodable, Comparable{
 
   case headPan, headTilt, slide, focus, jibPlusPan, jibPlusTilt
   
-  static func < (lhs: AxelID, rhs: AxelID) -> Bool {
+  public static func < (lhs: AxelID, rhs: AxelID) -> Bool {
     return lhs.value() < rhs.value()
   }
   
-  func value() -> Int{
+  public func value() -> Int{
     switch self {
     case .headPan: fallthrough
     case .jibPlusPan:
@@ -441,7 +441,7 @@ enum AxelID:String, Decodable, Comparable{
     }
   }
   
-  func toString() -> String{
+  public func toString() -> String{
     switch self {
     case .headPan:
       return "Pan"
@@ -461,41 +461,41 @@ enum AxelID:String, Decodable, Comparable{
 
 
 
-class AxelStatus : AxelDescription, Hashable, Equatable, Identifiable, ObservableObject, JoystickControlledAxel {
+public class AxelStatus : AxelDescription, Hashable, Equatable, Identifiable, ObservableObject, JoystickControlledAxel {
   
-  var id: AxelID{
+  public var id: AxelID{
     get{
       return axelName
     }
   }
   
-  @Published var axelName: AxelID
-  @Published var device:EdelkroneDevice
+  @Published public var axelName: AxelID
+  @Published public var device:EdelkroneDevice
   
   @Published var calibrated:Bool
-  var needsCalibration:Bool {
+  public var needsCalibration:Bool {
     get {
       self.objectWillChange.send()
       return  (self.calibrated == false) && device.canCalibrate
     }
   }
-  @Published var position: Double
-  @Published var batteryLevel: Double
+  @Published public var position: Double
+  @Published public var batteryLevel: Double
   
-  var shouldMove: Bool = false
-  var isLastMove: Bool = true
-  var moveValue: Double = 0.0
+  public var shouldMove: Bool = false
+  public var isLastMove: Bool = true
+  public var moveValue: Double = 0.0
   
   
-  static func == (lhs:AxelStatus, rhs:AxelStatus) -> Bool{
+  public static func == (lhs:AxelStatus, rhs:AxelStatus) -> Bool{
     return lhs.axelName == rhs.axelName
   }
   
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(axelName)
   }
   
-  init(from: PeriodicStatus, forName:AxelID){
+  public init(from: PeriodicStatus, forName:AxelID){
     axelName = forName
     device = from.deviceFor(name:forName)
     position = from.positionFor(name:forName)
@@ -503,7 +503,7 @@ class AxelStatus : AxelDescription, Hashable, Equatable, Identifiable, Observabl
     batteryLevel = from.batteryLevelFor(name: forName)
   }
   
-  func update(from: PeriodicStatus){
+  public func update(from: PeriodicStatus){
     device = from.deviceFor(name:axelName)
     position = from.positionFor(name:axelName)
     calibrated = from.calibrationStateFor(name: axelName)
@@ -512,17 +512,17 @@ class AxelStatus : AxelDescription, Hashable, Equatable, Identifiable, Observabl
 }
 
 // MARK: - MotionControlStatus
-class MotionControlStatus: ObservableObject {
-  @Published var axelStatus:[AxelID : AxelStatus] = [:]
+public class MotionControlStatus: ObservableObject {
+  @Published public var axelStatus:[AxelID : AxelStatus] = [:]
   
-  @Published var keyposeLoopActive:Bool = false
-  @Published var keyposeTargetIndex: Int = 0
-  @Published var keyposeStartIndex: Int = -1
-  @Published var keyposeMotionProgress: Double = 1.0
-  @Published var keyposeMotionDuration: Double = 0.0
-  @Published var state:MotionState = .idle
+  @Published public var keyposeLoopActive:Bool = false
+  @Published public var keyposeTargetIndex: Int = 0
+  @Published public var keyposeStartIndex: Int = -1
+  @Published public var keyposeMotionProgress: Double = 1.0
+  @Published public var keyposeMotionDuration: Double = 0.0
+  @Published public var state:MotionState = .idle
 
-  static func &= (lhs:MotionControlStatus, rhs:PeriodicStatus){
+  public static func &= (lhs:MotionControlStatus, rhs:PeriodicStatus){
     if rhs.deviceInfoReady == false{
       return
     }
@@ -570,34 +570,35 @@ class MotionControlStatus: ObservableObject {
     }
   }
   
-  init(){
+  public init(){
     let t = PeriodicStatus()
     self &= t
   }
   
-  var hasTilt:Bool {
+  public var hasTilt:Bool {
     get{
       return axelStatus.keys.contains(.headTilt) || axelStatus.keys.contains(.jibPlusTilt)
     }
   }
   
-  var hasPan:Bool {
+  public var hasPan:Bool {
     get{
       return  axelStatus.keys.contains(.headPan) || axelStatus.keys.contains(.jibPlusPan)
     }
   }
   
-  var hasSlide:Bool {
+  public var hasSlide:Bool {
     get {
       return axelStatus.keys.contains(.slide)
     }
   }
-  var hasFocus:Bool {
+  public var hasFocus:Bool {
     get {
       return axelStatus.keys.contains(.focus)
     }
   }
-  func panTiltObjects() -> [DegreeOfFreedom:JoystickControlledAxel] {
+  
+  public func panTiltObjects() -> [DegreeOfFreedom:JoystickControlledAxel] {
     var result:[DegreeOfFreedom:JoystickControlledAxel] = [:]
     
     if  hasPan {
@@ -609,7 +610,7 @@ class MotionControlStatus: ObservableObject {
     return result
   }
   
-  func slideObjects() -> [DegreeOfFreedom:JoystickControlledAxel] {
+  public func slideObjects() -> [DegreeOfFreedom:JoystickControlledAxel] {
     var result:[DegreeOfFreedom:JoystickControlledAxel] = [:]
     
     if hasSlide {
@@ -618,7 +619,7 @@ class MotionControlStatus: ObservableObject {
     return result
   }
   
-  func joystickControlled() -> [AxelStatus] {
+  public func joystickControlled() -> [AxelStatus] {
     var result:[AxelStatus] = []
     for (_, value) in axelStatus {
       if value.shouldMove{
@@ -634,23 +635,23 @@ class MotionControlStatus: ObservableObject {
 
 // MARK: - Return Results
 
-protocol ApiResult: Decodable{
+public protocol ApiResult: Decodable{
   var result: String{get}
   var message:String?{get}
 }
 
-struct ResultArrayWrapper<T: Decodable>: Decodable,ApiResult{
-  let data: [T]?
-  let result: String
-  let message: String?
+public struct ResultArrayWrapper<T: Decodable>: Decodable,ApiResult{
+  public let data: [T]?
+  public let result: String
+  public let message: String?
 }
 
 
 // MARK: Default Returns
 
-struct DefaultReturns: Decodable,ApiResult{
-  var result:String
-  var message:String?
+public struct DefaultReturns: Decodable,ApiResult{
+  public var result:String
+  public var message:String?
   
   enum CodingKeys: String, CodingKey{
     case result, message
@@ -658,12 +659,12 @@ struct DefaultReturns: Decodable,ApiResult{
 }
 
 // MARK: PairingStatus
-struct PairingStatus:Decodable{
-  enum pairingState:String,Decodable{
+public struct PairingStatus:Decodable{
+  public enum pairingState:String,Decodable{
     case idle,connecting,connectionOk,problem
   }
-  var lastPairError: String
-  var pairState: pairingState
+  public var lastPairError: String
+  public var pairState: pairingState
   
   enum CodingKeys:String, CodingKey{
     case lastPairError
@@ -672,10 +673,10 @@ struct PairingStatus:Decodable{
 }
 
 // MARK: PairingStatusReturn
-struct PairingStatusReturn:Decodable, ApiResult{
-  var result: String
-  var message: String?
-  let status: PairingStatus?
+public struct PairingStatusReturn:Decodable, ApiResult{
+  public var result: String
+  public var message: String?
+  public let status: PairingStatus?
   
   enum CodingKeys:String, CodingKey{
     case result, message,status="data"
@@ -683,45 +684,45 @@ struct PairingStatusReturn:Decodable, ApiResult{
 }
 
 
-protocol AxelDescription {
+public protocol AxelDescription {
   var axelName: AxelID { get }
   var device: EdelkroneDevice { get }
   
 }
 
-struct AxelIdentifier:AxelDescription, Decodable, Hashable, Equatable, Identifiable{
-  var id: ObjectIdentifier = ObjectIdentifier(AxelIdentifier.self)
+public struct AxelIdentifier:AxelDescription, Decodable, Hashable, Equatable, Identifiable{
+  public var id: ObjectIdentifier = ObjectIdentifier(AxelIdentifier.self)
   
-  let axelName: AxelID
-  let device: EdelkroneDevice
+  public let axelName: AxelID
+  public let device: EdelkroneDevice
   enum CodingKeys: String, CodingKey{
     case axelName = "axis",device
   }
-  func hash(into hasher: inout Hasher) {
+  public func hash(into hasher: inout Hasher) {
     hasher.combine(axelName)
   }
   
-  static func == (lhs: AxelIdentifier, rhs: AxelIdentifier) -> Bool {
+  public static func == (lhs: AxelIdentifier, rhs: AxelIdentifier) -> Bool {
     return lhs.axelName == rhs.axelName
   }
 }
 
-struct BundledDeviceInfo:Decodable, Equatable{
-  let batteryLevel:Double
-  let isTilted:Bool?
-  let device:EdelkroneDevice
+public struct BundledDeviceInfo:Decodable, Equatable{
+  public let batteryLevel:Double
+  public let isTilted:Bool?
+  public let device:EdelkroneDevice
   enum CodingKeys:String,CodingKey{
     case batteryLevel, isTilted, device="type"
   }
-  static func == (lhs: BundledDeviceInfo, rhs:BundledDeviceInfo) -> Bool{
+  public static func == (lhs: BundledDeviceInfo, rhs:BundledDeviceInfo) -> Bool{
     return (lhs.batteryLevel == rhs.batteryLevel) && (lhs.device == rhs.device) && (lhs.isTilted == rhs.isTilted)
   }
 }
 
-enum MotionState:String, Decodable{
+public enum MotionState:String, Decodable{
   case idle, keyposeMove, realTimeMove, focusCalibration, sliderCalibration, joystickMove, unsupportedActivity
   
-  func toString() -> String {
+  public func toString() -> String {
     switch self {
     case .idle: return "Idle"
     case .keyposeMove: return "move to Keypose"
@@ -735,26 +736,26 @@ enum MotionState:String, Decodable{
 }
 // MARK: - Periodic Status
 
-class PeriodicStatus: Decodable{
-  var calibratedAxes:[AxelIdentifier] = []
-  var deviceInfo:[BundledDeviceInfo] = []
-  var deviceInfoReady:Bool = false
+public class PeriodicStatus: Decodable{
+  public var calibratedAxes:[AxelIdentifier] = []
+  public var deviceInfo:[BundledDeviceInfo] = []
+  public var deviceInfoReady:Bool = false
   
-  var keyposeLoopActive:Bool = false
-  var keyposeMotionAimIndex: Int = -1
-  var keyposeMotionStartIndex: Int = -1
-  var keyposeSlotsFilled:[Bool] = []
+  public var keyposeLoopActive:Bool = false
+  public var keyposeMotionAimIndex: Int = -1
+  public var keyposeMotionStartIndex: Int = -1
+  public var keyposeSlotsFilled:[Bool] = []
   //
-  var plannedMotionProgress: Double = 0.0
-  var plannedMotionDuration: Double = 0.0
-  var readings:[AxelID:Double] = [:]
+  public var plannedMotionProgress: Double = 0.0
+  public var plannedMotionDuration: Double = 0.0
+  public var readings:[AxelID:Double] = [:]
   //
-  var realTimeSupportedAxes: [AxelIdentifier] = []
-  var state:MotionState = .idle
-  var supportedAxes:[AxelIdentifier] = []
+  public var realTimeSupportedAxes: [AxelIdentifier] = []
+  public var state:MotionState = .idle
+  public var supportedAxes:[AxelIdentifier] = []
   //
-  var timestampDevice: Int64
-  var timestampEpoch: Int64
+  public var timestampDevice: Int64
+  public var timestampEpoch: Int64
   //
   enum CodingKeys:String, CodingKey{
     case calibratedAxes
@@ -767,7 +768,7 @@ class PeriodicStatus: Decodable{
     
   }
   
-  init(){
+  public init(){
     let json="""
     {
       "data": {
@@ -849,7 +850,7 @@ class PeriodicStatus: Decodable{
     self &= returns!.status
   }
   
-  required init(from decoder: Decoder) throws {
+  public required init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     calibratedAxes = try container.decode([AxelIdentifier].self, forKey: .calibratedAxes)
     deviceInfo = try container.decode([BundledDeviceInfo].self, forKey: .deviceInfo)
@@ -881,7 +882,7 @@ class PeriodicStatus: Decodable{
   }
   
   /// some access methods
-  func deviceFor(name: AxelID) -> EdelkroneDevice{
+  public func deviceFor(name: AxelID) -> EdelkroneDevice{
     for axel in supportedAxes {
       if axel.axelName == name{
         return axel.device
@@ -890,13 +891,13 @@ class PeriodicStatus: Decodable{
     return .unknown
   }
   
-  func positionFor(name: AxelID) -> Double{
+  public func positionFor(name: AxelID) -> Double{
     if readings.keys.contains(name) {
       return readings[name]!
     }
     return 0.0
   }
-  func calibrationStateFor(name:AxelID) -> Bool {
+  public func calibrationStateFor(name:AxelID) -> Bool {
     if deviceInfoReady {
       for axel in calibratedAxes {
         if axel.axelName == name {
@@ -907,7 +908,7 @@ class PeriodicStatus: Decodable{
     return false
   }
   
-  func batteryLevelFor(name: AxelID) -> Double {
+  public func batteryLevelFor(name: AxelID) -> Double {
     if deviceInfoReady {
       for k in 0..<supportedAxes.count {
         if supportedAxes[k].axelName == name {
@@ -919,7 +920,7 @@ class PeriodicStatus: Decodable{
   }
   
   
-  static func &= (lhs:PeriodicStatus,rhs:PeriodicStatus){
+  public static func &= (lhs:PeriodicStatus,rhs:PeriodicStatus){
     if lhs.calibratedAxes != rhs.calibratedAxes{
       lhs.calibratedAxes = rhs.calibratedAxes
     }
@@ -978,10 +979,10 @@ class PeriodicStatus: Decodable{
   }
 }
 
-struct PeriodicStatusReturn: Decodable, ApiResult{
-  var result: String
-  var message: String?
-  let status: PeriodicStatus
+public struct PeriodicStatusReturn: Decodable, ApiResult{
+  public var result: String
+  public var message: String?
+  public let status: PeriodicStatus
   enum CodingKeys:String, CodingKey{
     case result, message, status = "data"
   }

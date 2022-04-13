@@ -11,7 +11,14 @@ import SwiftUI
 
 protocol commandEnum {}
 
-protocol edelkroneNetwork{
+public protocol JoystickControlledAxel {
+  var shouldMove:Bool { get set }
+  var moveValue:Double { get set}
+  var isLastMove:Bool {get set}
+}
+
+
+public protocol edelkroneNetwork{
   func executeSession<T:ApiResult>(request: URLRequest, uploadData: Data, with:@escaping (Bool, T?, Any?)->Void, context: Any?) -> Void
   func getCommand(_ command :String ) -> Dictionary<String, Any>
   func commandToJSON(_commandDict: Dictionary<String, Any>) -> Data?
@@ -25,8 +32,8 @@ protocol edelkroneNetwork{
 /**
  encapsulates the edelkrone API calls and is the single point of information for the application.
  */
-class edelkroneAPI : ObservableObject{
-  static let shared = edelkroneAPI()
+public class edelkroneAPI : ObservableObject{
+  public static let shared = edelkroneAPI()
   
   /// Model for a single edelkrone LinkAdapter
   
@@ -73,48 +80,48 @@ class edelkroneAPI : ObservableObject{
     case shutter = "shutterTrigger"
   }
   
-  enum requestType : String {
+  public enum requestType : String {
     case link, bundle, device
   }
   
-  enum ConnectionState : String {
+  public enum ConnectionState : String {
     case presentLinkAdapters
     case pairMotionControlSystems
     case showMotionControlInterface
   }
   /// Array, containing all found LinkAdapters
-  @Published var scannedLinkAdapters:[LinkAdapter] = []    // list of deteced LinkAdapters
+  @Published public var scannedLinkAdapters:[LinkAdapter] = []    // list of deteced LinkAdapters
   
   /// Array containing all scanned MCSs
-  @Published var scannedMotionControlSystems:[MotionControlSystem] = []
+  @Published public var scannedMotionControlSystems:[MotionControlSystem] = []
   
   /// Array containing all ungrouped MCSs
-  @Published var ungroupedMotionControlSystems:[MotionControlSystem] = []
+  @Published public var ungroupedMotionControlSystems:[MotionControlSystem] = []
   
   /// Array of all PairingGroups
-  @Published var motionControlGroups:[PairingGroup] = []
+  @Published public var motionControlGroups:[PairingGroup] = []
   
   /// the Adapters organised by LinkID
-  @Published var adaptertDict:[String:LinkAdapter] = [:]
+  @Published public var adaptertDict:[String:LinkAdapter] = [:]
   
   /// MotionControlSystems organised by mcaAddress
-  @Published var motionControlSystemsDict:[String:MotionControlSystem] = [:]
+  @Published public var motionControlSystemsDict:[String:MotionControlSystem] = [:]
   
   /// the Groups organised be GroupID (Int)
-  @Published var motionControlGroupDict:[Int:PairingGroup] = [:]
+  @Published public var motionControlGroupDict:[Int:PairingGroup] = [:]
   
   // flag to determine if the link to the edelkrone API is established
-  @Published var isConnected : Bool = false
-  @Published var isPaired : Bool = false
-  @Published var hasAdapters : Bool = false
-  @Published var connectedAdapterID: String = ""
-  @Published var hasScannedMCS = false
+  @Published public var isConnected : Bool = false
+  @Published public var isPaired : Bool = false
+  @Published public var hasAdapters : Bool = false
+  @Published public var connectedAdapterID: String = ""
+  @Published public var hasScannedMCS = false
   
-  @Published var apiState:ConnectionState = .presentLinkAdapters
+  @Published public var apiState:ConnectionState = .presentLinkAdapters
   
-  @Published var periodicMCSStatus :PeriodicStatus = PeriodicStatus()
+  @Published public var periodicMCSStatus :PeriodicStatus = PeriodicStatus()
   
-  @Published var motionControlStatus: MotionControlStatus = MotionControlStatus()
+  @Published public var motionControlStatus: MotionControlStatus = MotionControlStatus()
   
   // Variables from Preferences to indicate what was used in the last run
   @AppStorage(Preferences.Hostname.rawValue) fileprivate  var hostname = ""
@@ -127,15 +134,15 @@ class edelkroneAPI : ObservableObject{
   ///
   // MARK: Threads
   fileprivate var scanResultThread: Thread? = nil
-  @Published var scanResultThreadIsRunning:Bool = false
+  @Published public var scanResultThreadIsRunning:Bool = false
   
   /// and a thread for retrieving pairing status
   fileprivate var pairingStatusThread: Thread? = nil
-  @Published var pairingStatusThreadIsRunning:Bool = false
+  @Published public var pairingStatusThreadIsRunning:Bool = false
   
   /// and for periodic updates
   fileprivate var periodicStatusThread: Thread? = nil
-  @Published var periodicStatusThreadIsRunning:Bool = false
+  @Published public var periodicStatusThreadIsRunning:Bool = false
   
   /// and the joystick update thread is not existing but work is done by the periodic thread
   fileprivate var joystickThread: Thread? = nil
@@ -162,7 +169,7 @@ class edelkroneAPI : ObservableObject{
   
   
   
-  func linkStatus() -> Void{
+  public func linkStatus() -> Void{
     
   }
   
@@ -180,7 +187,7 @@ class edelkroneAPI : ObservableObject{
  */
 extension edelkroneAPI:edelkroneNetwork{
   
-  func executeSession<T:ApiResult>(request: URLRequest, uploadData: Data, with:@escaping (Bool, T?, Any?)->Void, context: Any?){
+  public func executeSession<T:ApiResult>(request: URLRequest, uploadData: Data, with:@escaping (Bool, T?, Any?)->Void, context: Any?){
     let task = URLSession.shared.uploadTask(with: request, from: uploadData) { data, response, error in
       if let error = error {
         print ("error: \(error)")
@@ -216,7 +223,7 @@ extension edelkroneAPI:edelkroneNetwork{
     task.resume()
   }
   
-  func executeSessionGet<T:ApiResult>(request: URLRequest, with:@escaping (Bool, T?, Any?)->Void, context: Any?){
+  public func executeSessionGet<T:ApiResult>(request: URLRequest, with:@escaping (Bool, T?, Any?)->Void, context: Any?){
     let task = URLSession.shared.dataTask(with: request) { data, response, error in
       if let error = error {
         print ("error: \(error)")
@@ -252,12 +259,12 @@ extension edelkroneAPI:edelkroneNetwork{
     task.resume()
   }
   
-  func getCommand(_ command :String ) -> Dictionary<String, Any>{
+  public func getCommand(_ command :String ) -> Dictionary<String, Any>{
     let someDict:Dictionary = ["command": command]
     return someDict
   }
   
-  func commandToJSON(_commandDict: Dictionary<String, Any>) -> Data?{
+  public func commandToJSON(_commandDict: Dictionary<String, Any>) -> Data?{
     var result : Data? = nil
     do{
       result = try JSONSerialization.data(withJSONObject: _commandDict, options: .prettyPrinted)
@@ -267,7 +274,7 @@ extension edelkroneAPI:edelkroneNetwork{
     return result
   }
   
-  func getURL(adapterID:String, type:requestType)->URL?{
+  public func getURL(adapterID:String, type:requestType)->URL?{
     @AppStorage(Preferences.Hostname.rawValue)   var hostname = ""
     @AppStorage(Preferences.Port.rawValue)  var port = 8080
     
@@ -282,16 +289,16 @@ extension edelkroneAPI:edelkroneNetwork{
     return p
   }
   
-  func getURL(adapter:LinkAdapter,  type:requestType)->URL?{
+  public func getURL(adapter:LinkAdapter,  type:requestType)->URL?{
     return getURL(adapterID: adapter.id, type: type)
   }
   
-  func getURL(_ type: requestType ) -> URL?{
+  public func getURL(_ type: requestType ) -> URL?{
     @AppStorage(Preferences.LinkAdapter.rawValue)  var linkID = ""
     return getURL(adapterID: linkID, type: type)
   }
   
-  func getRequestFor(url: URL, command:Dictionary<String, Any> ) -> URLRequest{
+  public func getRequestFor(url: URL, command:Dictionary<String, Any> ) -> URLRequest{
     let requestData = commandToJSON(_commandDict: command) ?? Data()
     var request = URLRequest(url: url)
     request.httpMethod="POST"
@@ -307,7 +314,7 @@ extension edelkroneAPI:edelkroneNetwork{
 extension edelkroneAPI {
   
   
-  func reset() -> Void{
+  public func reset() -> Void{
     isConnected = false
     isPaired = false
     hasAdapters = false
@@ -329,7 +336,7 @@ extension edelkroneAPI {
     apiState = .presentLinkAdapters
   }
   
-  func disconnectNoResult() -> Void {
+  public func disconnectNoResult() -> Void {
     let requestDict = getCommand(commands.pairing.wireless.disconnect.rawValue)
     if let requestURL = getURL(.link){
       let request = getRequestFor(url: requestURL, command: requestDict)
@@ -338,7 +345,7 @@ extension edelkroneAPI {
   }
   
   
-  func disconnect() -> Void {
+  public func disconnect() -> Void {
     let requestDict = getCommand(commands.pairing.wireless.disconnect.rawValue)
     if let requestURL = getURL(.link){
       let request = getRequestFor(url: requestURL, command: requestDict)
@@ -346,7 +353,7 @@ extension edelkroneAPI {
     }
   }
   
-  func disconnectResult(_ success:Bool, result:DefaultReturns?,context: Any) -> Void{
+  public func disconnectResult(_ success:Bool, result:DefaultReturns?,context: Any) -> Void{
     if(success){
       //      scannedLinkAdapters = []
       stopAllThreads()
@@ -367,7 +374,7 @@ extension edelkroneAPI {
   /**
    find connected edelkrone link adapters
    */
-  func scanLinkAdapters() -> Void{
+  public func scanLinkAdapters() -> Void{
     //    print("Initiate Scan for LinkAdapters on" + hostname + ":"+String(port) )
     let requestDict = getCommand(commands.link.status.rawValue)
     if let requestURL = getURL(.device){
@@ -376,7 +383,7 @@ extension edelkroneAPI {
     }
   }
   
-  func scanLinkAdaptersResult(_ success:Bool, result: ResultArrayWrapper<LinkAdapter>?, context:Any) -> Void{
+  public func scanLinkAdaptersResult(_ success:Bool, result: ResultArrayWrapper<LinkAdapter>?, context:Any) -> Void{
     if success {
       if result != nil && result!.message == nil{
         DispatchQueue.main.async {
@@ -393,7 +400,7 @@ extension edelkroneAPI {
     }
   }
   
-  func detect(adapter: LinkAdapter){
+  public func detect(adapter: LinkAdapter){
     //    print("Stry to detect a given link adapter")
     var url = getURL(adapter: adapter, type: .link)
     url?.appendPathComponent("detect")
@@ -404,7 +411,7 @@ extension edelkroneAPI {
   
   // MARK: - wirelessPairingScanStart -
   
-  func wirelessPairingScanStart( adapter:  LinkAdapter) -> Void{
+  public func wirelessPairingScanStart( adapter:  LinkAdapter) -> Void{
     
     let requestStruct = getCommand(commands.pairing.wireless.scanStart.rawValue)
     if let requestURL = getURL(adapter: adapter,type: .link){
@@ -432,7 +439,7 @@ extension edelkroneAPI {
     self.scanResultThreadIsRunning = true
   }
   
-  func wirelessPairingScanStart_Result (_ success:Bool, result:DefaultReturns?, context: Any?)->Void{
+  public func wirelessPairingScanStart_Result (_ success:Bool, result:DefaultReturns?, context: Any?)->Void{
     
     guard let adapter = context as? LinkAdapter else{
       connectedAdapterID = ""
@@ -455,7 +462,7 @@ extension edelkroneAPI {
   
   // MARK: - wirelessPairingScanResults -
   
-  func wirelessPairingScanResults() -> Void {
+  public func wirelessPairingScanResults() -> Void {
     let requestStruct = getCommand(commands.pairing.wireless.scanResults.rawValue)
     
     if let requestURL = getURL(adapterID: connectedAdapterID, type: .link){
@@ -464,7 +471,7 @@ extension edelkroneAPI {
     }
   }
   
-  func getPairingGroupFor(id: Int)->PairingGroup?{
+  public func getPairingGroupFor(id: Int)->PairingGroup?{
     if id == .noGroup{
       return nil
     }
@@ -478,7 +485,7 @@ extension edelkroneAPI {
     }
   }
   
-  func removeElementFromPairingGroup(_ mcs:MotionControlSystem){
+  public func removeElementFromPairingGroup(_ mcs:MotionControlSystem){
     guard let group = getPairingGroupFor(id: mcs.groupID) else {
       return
     }
@@ -491,7 +498,7 @@ extension edelkroneAPI {
     
     
   }
-  func updateMotionControlGroup(_ mcs: MotionControlSystem)
+  public func updateMotionControlGroup(_ mcs: MotionControlSystem)
   {
     if  motionControlSystemsDict.keys.contains(mcs.macAddress) {
       let orginol = motionControlSystemsDict[mcs.macAddress]!
@@ -513,7 +520,7 @@ extension edelkroneAPI {
     }
   }
   
-  func wirelessPairingScanResults_Result(_ success:Bool, result: ResultArrayWrapper<MotionControlSystem>?, context:Any) -> Void{
+  public func wirelessPairingScanResults_Result(_ success:Bool, result: ResultArrayWrapper<MotionControlSystem>?, context:Any) -> Void{
     if success{
       let someMSC = result!.data!
       //      print (someMSC.description)
@@ -552,7 +559,7 @@ extension edelkroneAPI {
   }
   
   // MARK: - create Bundle -
-  func wirelessPairingCreateBundle() -> Void{
+  public func wirelessPairingCreateBundle() -> Void{
     // first we collect the mac adresses of all the marked devices
     var pairingMacs:[String] = []
     var pairingMaster:String? = nil
@@ -575,7 +582,7 @@ extension edelkroneAPI {
     }
   }
   
-  func wirelessPairingCreateBundle_Result(_ success:Bool, result:DefaultReturns?, context:Any?) -> Void {
+  public func wirelessPairingCreateBundle_Result(_ success:Bool, result:DefaultReturns?, context:Any?) -> Void {
     if success{
       print("creation of bundle succeded")
       // stop the scanning thread and start with the pairing status thread
@@ -587,7 +594,7 @@ extension edelkroneAPI {
   }
   
   // MARK: - attach bundle -
-  func attachToBundle(_ bundle: PairingGroup) -> Void {
+  public func attachToBundle(_ bundle: PairingGroup) -> Void {
     var requestDict = getCommand(commands.pairing.wireless.attachToBundle.rawValue)
     requestDict["mac"] = bundle.groupMaster?.macAddress
     if let requestURL = getURL(.link) {
@@ -596,7 +603,7 @@ extension edelkroneAPI {
     }
   }
   
-  func attachToBundle_Result(_ success: Bool, result: DefaultReturns?, context: Any?) -> Void{
+  public func attachToBundle_Result(_ success: Bool, result: DefaultReturns?, context: Any?) -> Void{
     if success {
       self.apiState = .showMotionControlInterface
       stopAllThreads()
@@ -609,7 +616,7 @@ extension edelkroneAPI {
   }
   
   // MARK: - pairingStatus -
-  func wirelessPairingStatus() -> Void{
+  public func wirelessPairingStatus() -> Void{
     let requestDict = getCommand(commands.pairing.wireless.status.rawValue)
     if let requestURL = getURL(.link){
       let request = getRequestFor(url: requestURL, command: requestDict)
@@ -618,7 +625,7 @@ extension edelkroneAPI {
     
   }
   
-  func wirelessPairingStatus_Result(_ success:Bool, result:PairingStatusReturn?,context:Any?) -> Void {
+  public func wirelessPairingStatus_Result(_ success:Bool, result:PairingStatusReturn?,context:Any?) -> Void {
     if success {
       print("got a pairing status " )
       guard let k = result else { return }
@@ -675,14 +682,14 @@ extension edelkroneAPI {
   
   // MARK: - Periodic Status
   
-  func attachConnectedAdapter(adapterID:String ) -> Void {
+  public func attachConnectedAdapter(adapterID:String ) -> Void {
     apiState = .showMotionControlInterface
     self.connectedAdapterID = adapterID
     self.motionControlStatus.axelStatus = [:]
     startPeriodicStatusThread()
   }
   
-  func getPeriodicStatus() -> Void{
+  public func getPeriodicStatus() -> Void{
     if var requestURL = getURL(adapterID: connectedAdapterID, type: .bundle){
       requestURL.appendPathComponent("status")
       let request = URLRequest(url: requestURL)
@@ -690,7 +697,7 @@ extension edelkroneAPI {
     }
   }
   
-  func getPeriodicStatus_Result(_ success:Bool, result:PeriodicStatusReturn?, context:Any?) -> Void{
+  public func getPeriodicStatus_Result(_ success:Bool, result:PeriodicStatusReturn?, context:Any?) -> Void{
     //    var requestStruct = getCommand(commands.status.rawValue)
     //    print("Periodic Status: " + (result?.status.state.rawValue ?? "Failed"))
     guard let k = result?.status else { return }
@@ -726,7 +733,7 @@ extension edelkroneAPI {
   
   // MARK: - Joystick Move
   
-  func sendJoystickMove() -> Void {
+  public func sendJoystickMove() -> Void {
     // first we collect all axis and values that are currently manipulated by a joystick
     let controlledAxels = motionControlStatus.joystickControlled()
     if !controlledAxels.isEmpty {
@@ -745,7 +752,7 @@ extension edelkroneAPI {
     }
   }
   
-  func sendJoystickMove_Result(_ success:Bool, result:DefaultReturns?, context:Any?) -> Void{
+  public func sendJoystickMove_Result(_ success:Bool, result:DefaultReturns?, context:Any?) -> Void{
     if success {
       //      print("Moving")
     }
