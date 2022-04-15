@@ -84,6 +84,7 @@ public class edelkroneAPI : ObservableObject{
     case link, bundle, device
   }
   
+  /// Deswcription of the state of the current connection.
   public enum ConnectionState : String {
     case presentLinkAdapters
     case pairMotionControlSystems
@@ -117,7 +118,7 @@ public class edelkroneAPI : ObservableObject{
   @Published public var connectedAdapterID: String = ""
   @Published public var hasScannedMCS = false
   
-  @Published public var apiState:ConnectionState = .presentLinkAdapters
+  @Published public var apiState:ConnectionState = .pairMotionControlSystems
   
   @Published public var periodicMCSStatus :PeriodicStatus = PeriodicStatus()
   
