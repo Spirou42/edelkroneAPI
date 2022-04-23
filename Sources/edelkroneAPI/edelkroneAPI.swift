@@ -168,8 +168,6 @@ public class edelkroneAPI : ObservableObject{
     Thread.exit()
   }
   
-  
-  
   public func linkStatus() -> Void{
     
   }
@@ -681,7 +679,7 @@ extension edelkroneAPI {
     self.pairingStatusThreadIsRunning = true
   }
   
-  // MARK: - Periodic Status
+  // MARK: - Periodic Status -
   
   public func attachConnectedAdapter(adapterID:String ) -> Void {
     apiState = .showMotionControlInterface
@@ -732,7 +730,7 @@ extension edelkroneAPI {
   }
   
   
-  // MARK: - Joystick Move
+  // MARK: - Joystick Move -
   
   public func sendJoystickMove() -> Void {
     // first we collect all axis and values that are currently manipulated by a joystick
@@ -758,5 +756,21 @@ extension edelkroneAPI {
       //      print("Moving")
     }
   }
+  
+  // MARK: - Keypose -
+  
+  public func keyposeReadNumericValues(_ keyposeIndex:Int) -> Void {
+    var requestDict = getCommand(commands.keypose.readNumericValues.rawValue)
+    requestDict["index"] = keyposeIndex
+    if let requestURL = getURL(.bundle) {
+      let request = getRequestFor(url: requestURL, command: requestDict)
+      executeSession(request: request, uploadData: request.httpBody!, with: keyposeReadNumericValues_Result, context: nil)
+    }
+  }
+  
+  func keyposeReadNumericValues_Result(_ success:Bool, result:ResultWrapper<Dictionary<String,Double>>?, context:Any?) -> Void {
+    
+  }
+  
   
 }

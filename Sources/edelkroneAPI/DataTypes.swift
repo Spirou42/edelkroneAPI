@@ -1,6 +1,6 @@
 /**
  DataTypes.swift
- edelkroneTest (macOS)
+ edelkroneAPI
  
  Created by Carsten Müller on 04.03.22.
  Copyright © 2022 Carsten Müller. All rights reserved.
@@ -109,7 +109,13 @@ public enum EdelkroneDevice : String, Decodable{
   }
 }
 
-public enum AxelID:String, Decodable, Comparable{
+public enum AxelID:String, Decodable, Comparable, Identifiable{
+  public var id: String {
+    get {
+      return self.rawValue
+    }
+  }
+  
   
   case headPan, headTilt, slide, focus, jibPlusPan, jibPlusTilt
   

@@ -170,5 +170,5 @@ public class MotionControlSystem: Decodable, Identifiable, ObservableObject, Has
     case setup = "setup"
     case deviceType = "type"
   }
-  
 }
+

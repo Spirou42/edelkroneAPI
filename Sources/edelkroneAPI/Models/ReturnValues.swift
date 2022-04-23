@@ -15,6 +15,13 @@ public protocol ApiResult: Decodable{
   var message:String?{get}
 }
 
+public struct ResultWrapper<T: Decodable>: Decodable,ApiResult{
+  public let data: T?
+  public let result: String
+  public let message: String?
+}
+
+
 public struct ResultArrayWrapper<T: Decodable>: Decodable,ApiResult{
   public let data: [T]?
   public let result: String

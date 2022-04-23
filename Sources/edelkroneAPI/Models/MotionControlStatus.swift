@@ -71,6 +71,7 @@ public class MotionControlStatus: ObservableObject {
   @Published public var keyposeMotionProgress: Double = 1.0
   @Published public var keyposeMotionDuration: Double = 0.0
   @Published public var state:MotionState = .idle
+  @Published public var filledKeypose:[Bool] = []
 
   public static func &= (lhs:MotionControlStatus, rhs:PeriodicStatus){
     if rhs.deviceInfoReady == false{
@@ -118,6 +119,15 @@ public class MotionControlStatus: ObservableObject {
         lhs.axelStatus.removeValue(forKey: key)
       }
     }
+    
+    // update or create keypose slots
+    if lhs.filledKeypose.count != rhs.keyposeSlotsFilled.count{
+      lhs.filledKeypose.removeAll()
+      lhs.filledKeypose = Array(repeating: false, count: rhs.keyposeSlotsFilled.count)
+      for idx in 0..<rhs.keyposeSlotsFilled.count {
+        lhs.filledKeypose[idx] = rhs.keyposeSlotsFilled[idx]
+      }
+    }
   }
   
   public init(){
@@ -142,6 +152,7 @@ public class MotionControlStatus: ObservableObject {
       return axelStatus.keys.contains(.slide)
     }
   }
+  
   public var hasFocus:Bool {
     get {
       return axelStatus.keys.contains(.focus)
